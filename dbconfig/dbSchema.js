@@ -1,10 +1,10 @@
 /*
   Banco de dados - PUMA
 
-  Nmr Tabelas: 22
+  Nmr Tabelas: 24
   Nome do banco de dados: puma
   Criado por: Gabriel Tiveron, Gustavo Nogueira, Bruno Henrique
-  Última alteração: Reestruturação do Banco
+  Última alteração: Adição das tabelas referentes as turmas
 */
 
 module.exports = Object.freeze({
@@ -210,14 +210,14 @@ module.exports = Object.freeze({
     CREATE TYPE semester_types AS ENUM ('1', '2', 'VERAO');
 
     CREATE TABLE CLASSES (
-        classId SERIAL,
+        classId SERIAL UNIQUE,
         subjectId INT NOT NULL,
         classCode VARCHAR(3) NOT NULL,
         year INT NOT NULL,
         semester semester_types NOT NULL,
         password VARCHAR(6) NOT NULL,
         deleted BOOL DEFAULT FALSE NOT NULL,
-        CONSTRAINT CLASSES_PK PRIMARY KEY (classId)
+        CONSTRAINT CLASSES_PK PRIMARY KEY (subjectId, classCode)
     );
 
     CREATE TABLE CLASSES_TEACHER (
