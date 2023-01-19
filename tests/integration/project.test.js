@@ -166,13 +166,28 @@ describe('Get Project by ID', () => {
     });
 });
 
-describe('Delete a Project', () => {
+describe('Delete a Project Success', () => {
     it('Should delete a project', (done) => {
         request(app)
             .delete('/project/1')
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(200)
+            .then(() => {
+                done();
+            }).catch((error) => {
+                done(new Error(error));
+            });
+    });
+});
+
+describe('Delete a Project Failure', () => {
+    it('Should not delete a project', (done) => {
+        request(app)
+            .delete('/project/a')
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(400)
             .then(() => {
                 done();
             }).catch((error) => {

@@ -165,3 +165,18 @@ describe('Delete a Keyword', () => {
             });
     });
 });
+
+describe('Failure in Delete a Keyword', () => {
+    it('Should not delete a keyword', (done) => {
+        request(app)
+            .delete('/keyword/a')
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(400)
+            .then(() => {
+                done();
+            }).catch((error) => {
+                done(new Error(error));
+            });
+    });
+});

@@ -36,7 +36,7 @@ describe('Get Class by ID', () => {
     });
 });
 
-describe('Delete a Class', () => {
+describe('Delete a Class Success', () => {
 
     it('Should delete a class', (done) => {
         request(app)
@@ -44,6 +44,22 @@ describe('Delete a Class', () => {
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(200)
+            .then(() => {
+                done();
+            }).catch((error) => {
+                done(new Error(error));
+            });
+    });
+});
+
+describe('Delete a Class Failure', () => {
+
+    it('Should not delete a class', (done) => {
+        request(app)
+            .delete('/class/a')
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(400)
             .then(() => {
                 done();
             }).catch((error) => {
