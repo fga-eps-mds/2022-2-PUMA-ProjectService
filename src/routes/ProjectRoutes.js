@@ -52,8 +52,6 @@ routes.put('/project/reallocate', (req, res) => {
 routes.get('/project/keywords', (req, res) => {
   projectController.getKeywordsAvailbleToProject().then((response) => {
     res.status(200).json(response);
-  }).catch((error) => {
-    res.status(400).json(error);
   });
 });
 
@@ -63,8 +61,6 @@ routes.get('/userProposals/:userId', (req, res) => {
   if (functions.checkInt(userId)) {
     projectController.getUserProposals(user).then((response) => {
       res.status(200).json(response);
-    }).catch((error) => {
-      res.status(400).json(error);
     });
   } else {
     res.status(401).json({ satus: 'Fail', message: 'param given is not integer' });
@@ -76,8 +72,6 @@ routes.get('/project/:projectId', (req, res) => {
   const projectId = Number(req.params.projectId);
   projectController.getProjectData(projectId).then((response) => {
     res.status(200).json(response);
-  }).catch((error) => {
-    res.status(400).json(error);
   });
 });
 

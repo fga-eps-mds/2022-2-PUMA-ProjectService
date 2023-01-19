@@ -6,8 +6,6 @@ const classController = require('../controller/ClassController');
 routes.get('/classes', (req, res) => {
   classController.getClasses().then((response) => {
     res.status(200).json(response);
-  }).catch((response) => {
-    res.status(400).json(response);
   });
 });
 
@@ -16,8 +14,6 @@ routes.get('/class/:classid', (req, res) => {
     classid: parseInt(req.params.classid, 10),
   }).then((response) => {
     res.status(200).json(response);
-  }).catch((response) => {
-    res.status(400).json(response);
   });
 });
 
