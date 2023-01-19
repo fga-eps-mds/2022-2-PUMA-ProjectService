@@ -5,7 +5,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       keywordRepository.getAllKeywords().then((response) => {
         resolve(response);
-      }).catch((error) => { reject(error) });
+      });
     })
   },
 
