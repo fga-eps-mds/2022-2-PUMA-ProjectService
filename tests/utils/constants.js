@@ -195,9 +195,9 @@ module.exports = {
                     classID: 1,
                     subjectId: 2,
                     classCode: "BB",
-                    year: 2021,
+                    year: null,
                     semester: "1",
-                    password: "123456",
+                    password: null,
                     deleted: false
                 }
             }

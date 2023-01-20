@@ -67,3 +67,21 @@ describe('Delete a Class Failure', () => {
             });
     });
 });
+
+describe('Update Class Failure', () => {
+    it('Should not update class', (done) => {
+        request(app)
+            .put('/project')
+            .set('Accept', 'application/json')
+            .send(CONSTANTS.CLASS.UPDATE.FAILURE)
+            .expect('Content-Type', /json/)
+            .expect(400)
+            .then(() => {
+                done();
+            }).catch((error) => {
+                done(new Error('The class can not be updated'));
+            });
+    });
+});
+
+

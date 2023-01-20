@@ -166,6 +166,22 @@ describe('Get Project by ID', () => {
     });
 });
 
+describe('Get Project by ID', () => {
+    it('Should get project data', (done) => {
+        request(app)
+            .get('/project/1')
+            .send({subjectid: 1, semesterid: 1})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then(() => {
+                done();
+            }).catch((error) => {
+                done(new Error(error));
+            });
+    });
+});
+
 describe('Delete a Project Success', () => {
     it('Should delete a project', (done) => {
         request(app)

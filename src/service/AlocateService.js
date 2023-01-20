@@ -3,7 +3,7 @@
 /* eslint-disable import/extensions */
 /* eslint-disable import/no-unresolved */
 // import axios from '@/main.js';
-const axios = require('axios')
+/* const axios = require('axios')
 
 module.exports = {
   getSubject(keywords) {
@@ -15,5 +15,5 @@ module.exports = {
       });
     });
   },
-}
+} */
 
