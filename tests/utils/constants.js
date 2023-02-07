@@ -176,5 +176,32 @@ module.exports = {
                 }
             },
         }
-    },
+    }, 
+    CLASS :{
+        UPDATE: {
+            SUCCESS: {
+                T1: {
+                    classID: 1,
+                    subjectId: 2,
+                    classCode: "BB",
+                    year: 2021,
+                    semester: "1",
+                    password: "123456",
+                    deleted: false
+                }
+            },
+            FAILURE: {
+                T1: {
+                    classID: 1,
+                    subjectId: 2,
+                    classCode: "BB",
+                    year: null,
+                    semester: "1",
+                    password: null,
+                    deleted: false
+                }
+            }
+
+        }
+    }
 };

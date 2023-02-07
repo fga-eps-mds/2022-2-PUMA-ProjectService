@@ -14,40 +14,30 @@ routes.post('/subject', (req, res) => {
 routes.get('/subject', (req, res) => {
   subjectController.getSubjects().then((response) => {
     res.status(200).json(response);
-  }).catch((response) => {
-    res.status(400).json(response);
   });
 });
 
 routes.get('/subject/keywords', (req, res) => {
   subjectController.getKeywords().then((response) => {
     res.status(200).json(response);
-  }).catch((response) => {
-    res.status(400).json(response);
   });
 });
 
 routes.get('/subareas', (req, res) => {
   subjectController.getSubareas().then((response) => {
     res.status(200).json(response);
-  }).catch((response) => {
-    res.status(400).json(response);
   });
 });
 
 routes.get('/knowledgeareas', (req, res) => {
   subjectController.getKnowledgeAreas().then((response) => {
     res.status(200).json(response);
-  }).catch((response) => {
-    res.status(400).json(response);
   });
 });
 
 routes.get('/professors', (req, res) => {
   subjectController.getProfessors().then((response) => {
     res.status(200).json(response);
-  }).catch((response) => {
-    res.status(400).json(response);
   });
 });
 
@@ -56,8 +46,6 @@ routes.get('/subject/:subjectid', (req, res) => {
     subjectid: parseInt(req.params.subjectid, 10),
   }).then((response) => {
     res.status(200).json(response);
-  }).catch((response) => {
-    res.status(400).json(response);
   });
 });
 

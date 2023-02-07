@@ -162,13 +162,28 @@ describe('Failure Update Details Subjects', () => {
     });
 });
 
-describe('Delete a Subject', () => {
+describe('Delete a Subject Success', () => {
     it('Should delete a subject', (done) => {
         request(app)
             .delete('/subject/2')
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(200)
+            .then(() => {
+                done();
+            }).catch((error) => {
+                done(new Error(error));
+            });
+    });
+});
+
+describe('Delete a Subject Failure', () => {
+    it('Should not delete a subject', (done) => {
+        request(app)
+            .delete('/subject/a')
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(400)
             .then(() => {
                 done();
             }).catch((error) => {

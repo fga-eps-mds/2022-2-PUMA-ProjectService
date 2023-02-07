@@ -166,10 +166,71 @@ describe('Get Project by ID', () => {
     });
 });
 
-describe('Delete a Project', () => {
+describe('Get Project by ID', () => {
+    it('Should get project data', (done) => {
+        request(app)
+            .get('/project/1')
+            .send({subjectid: 1, semesterid: 1})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then(() => {
+                done();
+            }).catch((error) => {
+                done(new Error(error));
+            });
+    });
+});
+
+describe('Delete a Project Success', () => {
     it('Should delete a project', (done) => {
         request(app)
             .delete('/project/1')
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then(() => {
+                done();
+            }).catch((error) => {
+                done(new Error(error));
+            });
+    });
+});
+
+describe('Get User Proposals', () => {
+    it('Should get user proposals', (done) => {
+        request(app)
+            .get('/userProposals/1')
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then((response) => {
+                done();
+            }).catch((error) => {
+                done(new Error(error));
+            });
+    });
+});
+
+describe('Delete a Project Failure', () => {
+    it('Should not delete a project', (done) => {
+        request(app)
+            .delete('/project/a')
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(400)
+            .then(() => {
+                done();
+            }).catch((error) => {
+                done(new Error(error));
+            });
+    });
+});
+
+describe('Initial Page', () => {
+    it('Should get initial project page', (done) => {
+        request(app)
+            .get('/')
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(200)
