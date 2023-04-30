@@ -32,7 +32,9 @@
     "nyc": "^15.1.0",
     "pg": "^8.7.1",
     "pg-format": "^1.0.4",
-    "sequelize": "^6.31.0"
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.31.0",
+    "sequelize-cli": "^6.6.0"
   },
   "devDependencies": {
     "eslint": "^6.0.0",
