@@ -3,7 +3,7 @@ const database = require('../AppDb');
 
 const Lectures = database.define('Lectures', {
     regNumber: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
             model: {
@@ -14,7 +14,7 @@ const Lectures = database.define('Lectures', {
         },
     },
     subjectId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: {

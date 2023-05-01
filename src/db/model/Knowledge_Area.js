@@ -13,7 +13,7 @@ const knowledge_Area = database.define('Knowledge_Area', {
         unique: true
     },
     deleted: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },

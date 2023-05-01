@@ -8,7 +8,7 @@ const Classes_Schedule = database.define('Classes_Schedule', {
         primaryKey: true,
     },
     classId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: {

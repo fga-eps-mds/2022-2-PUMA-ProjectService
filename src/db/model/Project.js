@@ -8,7 +8,7 @@ const Project = database.define('Project', {
         primaryKey: true,
     },
     userId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: {
@@ -19,7 +19,7 @@ const Project = database.define('Project', {
         },
     },
     subjectId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: {
@@ -30,7 +30,7 @@ const Project = database.define('Project', {
         },
     },
     semesterId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: {
@@ -62,7 +62,7 @@ const Project = database.define('Project', {
         allowNull: false
     },
     deleted: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },

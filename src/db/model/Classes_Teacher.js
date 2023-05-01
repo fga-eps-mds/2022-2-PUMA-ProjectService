@@ -19,7 +19,7 @@ const Classes_Teacher = database.define('Classes_Teacher', {
         },
     },
     classId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: {

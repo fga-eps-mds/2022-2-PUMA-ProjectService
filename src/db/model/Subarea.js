@@ -8,12 +8,12 @@ const Subarea = database.define('Subarea', {
         primaryKey: true,
     },
     knowledgeAreaId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         unique: true,
         references: {
             model: {
-                tableName: "knowledge_Area",
+                tableName: "Knowledge_Area",
                 schema: "public",
             },
             key: "knowledgeAreaId"
@@ -24,7 +24,7 @@ const Subarea = database.define('Subarea', {
         allowNull: false
     },
     deleted: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },

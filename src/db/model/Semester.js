@@ -8,7 +8,7 @@ const Semester = database.define('Semester', {
         primaryKey: true,
     },
     subjectId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         unique: true,
         references: {
@@ -36,10 +36,9 @@ const Semester = database.define('Semester', {
             values: ['AD', 'CD'],
         }),
         allowNull: false,
-        defaultValue: false
     },
     deleted: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },

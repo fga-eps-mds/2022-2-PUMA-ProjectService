@@ -37,7 +37,7 @@ const Classes = database.define('Classes', {
         allowNull: false
     },
     deleted: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },

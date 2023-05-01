@@ -21,7 +21,7 @@ const Subject = require('./db/model/Subject');
 const Summarize = require('./db/model/Summarize');
 const Teacher = require('./db/model/Teacher');
 
-const syncDb = require('./db/SyncDb');
+// const syncDb = require('./db/SyncDb');
 
 // eslint-disable-next-line no-unused-vars
 // const db = require('../dbconfig/dbConfig');
@@ -33,19 +33,21 @@ const app = express();
 (async () => {
   try {
     await Common_User.sync({ alter: true });
-    await Classes.sync({ alter: true });
     await Subject.sync({ alter: true });
+    await Knowledge_Area.sync({ alter: true });
+    await Teacher.sync({ alter: true });
+
+
+    await Classes.sync({ alter: true });
     await Subarea.sync({ alter: true });
     await Semester.sync({ alter: true });
     await Keyword.sync({ alter: true });
-    await Knowledge_Area.sync({ alter: true });
     await Classes_Schedule.sync({ alter: true });
     await Classes_Teacher.sync({ alter: true });
     await Identifies.sync({ alter: true });
     await Lectures.sync({ alter: true });
     await Project.sync({ alter: true });
     await Summarize.sync({ alter: true });
-    await Teacher.sync({ alter: true });
     console.log('Database Inicializado')
   } catch (error) {
     console.log("Erro ao inicializar o banco ->", error);

@@ -16,7 +16,7 @@ const Subject = database.define('Subject', {
         type: DataTypes.STRING
     },
     deleted: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },

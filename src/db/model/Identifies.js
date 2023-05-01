@@ -3,7 +3,7 @@ const database = require('../AppDb');
 
 const Identifies = database.define('Identifies', {
     subAreaId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         unique: true,
         references: {
@@ -15,7 +15,7 @@ const Identifies = database.define('Identifies', {
         },
     },
     subjectId: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         unique: true,
         references: {

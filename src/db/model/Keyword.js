@@ -12,7 +12,7 @@ const Keyword = database.define('Keyword', {
         allowNull: false
     },
     deleted: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
     },
