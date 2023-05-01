@@ -1,18 +1,23 @@
 const db = require('../../dbconfig/dbConfig');
+const sequelize = require('sequelize');
+const Project = require('../db/model/Project');
+const Common_User = require('../db/model/Common_User');
+const Summarize = require('../db/model/Summarize');
+const Abstracts = require('../db/model/Abstracts');
 
 module.exports = {
   getUserProposals: async (user) => {
     return new Promise((resolve, reject) => {
-      let result = new Promise(() => { });
+      let results = new Promise(() => { });
       if (user.operation === 'projetos') {
-        result = db.query('SELECT p.projectid, p.name, p.expectedresult, p.status, p.createdat, s.name AS subject, cu.fullname FROM PROJECT p LEFT JOIN subject s on p.subjectid = s.subjectid LEFT JOIN common_user cu on p.userid = cu.userid WHERE not(p.deleted) ORDER BY p.projectid DESC');
+        results = sequelize.query(`SELECT p.projectid, p.name, p.expectedresult, p.status, p.createdat, s.name AS subject, cu.fullname FROM PROJECT p LEFT JOIN subject s on p.subjectid = s.subjectid LEFT JOIN common_user cu on p.userid = cu.userid WHERE not(p.deleted) ORDER BY p.projectid DESC`);
       } else if (user.operation === 'projetos-disciplina') {
-        result = db.query('SELECT p.projectid, p.name, p.expectedresult, p.status, p.createdat, s.name AS subject, cu.fullname FROM project p LEFT JOIN subject s ON p.subjectid = s.subjectid LEFT JOIN common_user cu ON p.userid = cu.userid WHERE not(p.deleted) and p.subjectid IN (SELECT DISTINCT l.subjectid FROM professor prof INNER JOIN lectures l ON prof.regnumber = l.regnumber WHERE prof.userid = $1) ORDER BY p.projectid DESC', [user.userId]);
+        results = sequelize.query(`SELECT p.projectid, p.name, p.expectedresult, p.status, p.createdat, s.name AS subject, cu.fullname FROM project p LEFT JOIN subject s ON p.subjectid = s.subjectid LEFT JOIN common_user cu ON p.userid = cu.userid WHERE not(p.deleted) and p.subjectid IN (SELECT DISTINCT l.subjectid FROM professor prof INNER JOIN lectures l ON prof.regnumber = l.regnumber WHERE prof.userid = ${user.userId}) ORDER BY p.projectid DESC`);
       } else {
-        result = db.query('SELECT p.projectid, p.name, p.expectedresult, p.status, p.createdat, s.name AS subject, cu.fullname FROM PROJECT p LEFT JOIN subject s on p.subjectid = s.subjectid LEFT JOIN common_user cu on p.userid = cu.userid WHERE not(p.deleted) and p.userid = $1 ORDER BY p.projectid DESC', [user.userId]);
+        results = sequelize.query(`SELECT p.projectid, p.name, p.expectedresult, p.status, p.createdat, s.name AS subject, cu.fullname FROM PROJECT p LEFT JOIN subject s on p.subjectid = s.subjectid LEFT JOIN common_user cu on p.userid = cu.userid WHERE not(p.deleted) and p.userid = ${user.userId} ORDER BY p.projectid DESC`);
       }
-      result.then((response) => {
-        resolve(response.rows);
+      results.then((response) => {
+        resolve(response);
       }).catch((response) => {
         reject(response);
       });
@@ -21,9 +26,12 @@ module.exports = {
 
   getProjectData: (projectId) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM PROJECT WHERE projectid = $1', [projectId])
-        .then((response) => {
-          resolve(response.rows[0]);
+      Project.findOne({
+        where: {
+          projectId,
+        }
+      }).then((response) => {
+          resolve(response);
         })
         .catch((error) => {
           reject(error);
@@ -33,9 +41,12 @@ module.exports = {
 
   getUserData: (userId) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT userId, fullName, email, phoneNumber FROM COMMON_USER WHERE userid = $1', [userId])
-        .then((response) => {
-          resolve(response.rows[0]);
+      Common_User.findOne({
+        where: {
+          userId,
+        }
+      }).then((response) => {
+          resolve(response);
         })
         .catch((error) => {
           reject(error);
@@ -46,9 +57,13 @@ module.exports = {
   // Used in allocation
   getSubjectByKeyword: (keywordId) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM SUMMARIZE WHERE keywordid = $1`, [keywordId]).then((response) => {
-        if (response.rows[0]) {
-          resolve(response.rows[0].subjectid);
+      Summarize.findAll({
+        where: {
+          keywordId,
+        }
+      }).then((response) => {
+        if (response) {
+          resolve(response.subjectId);
         } else {
           reject({ status: 'NOK', message: 'Nenhuma disciplina contém a palavra-chave' });
         }
@@ -60,10 +75,15 @@ module.exports = {
 
   evaluateProject: ({ projectId, status, feedback }) => {
     return new Promise((resolve, reject) => {
-      db.query(`UPDATE PROJECT SET status = $2, feedback = $3 WHERE projectid = $1 RETURNING *`,
-        [projectId, status, feedback]
-      ).then((response) => {
-        resolve(response.rows[0]);
+      Project.update({
+        status,
+        feedback,
+      }, {
+        where: {
+          projectId,
+        }
+      }).then((response) => {
+        resolve(response);
       }).catch((error) => {
         reject(error);
       });
@@ -72,10 +92,16 @@ module.exports = {
 
   reallocateProject: ({ projectId, status, feedback, subjectId }) => {
     return new Promise((resolve, reject) => {
-      db.query(`UPDATE PROJECT SET status = $2, feedback = $3, subjectid = $4 WHERE projectid = $1 RETURNING *`,
-        [projectId, status, feedback, subjectId]
-      ).then((response) => {
-        resolve(response.rows[0]);
+      Project.update({
+        status,
+        feedback,
+        subjectId,
+      }, {
+        where: {
+          projectId,
+        }
+      }).then((response) => {
+        resolve(response);
       }).catch((error) => {
         reject(error);
       });
@@ -84,11 +110,17 @@ module.exports = {
 
   addProject: (project) => {
     return new Promise((resolve, reject) => {
-      db.query(
-        `INSERT INTO PROJECT(name,problem,expectedresult,status,userid,subjectid,createdat) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-        [project.name, project.problem, project.expectedresult, project.status, project.userid, project.subjectid, project.createdat],
-      ).then((response) => {
-        resolve(response.rows[0]);
+      Project.create({
+        userId: project.userId,
+        subjectId: project.subjectId,
+        semesterId: project.semesterId,
+        name: project.name,
+        expectedResult: project.expectedResult,
+        feedback: project.feedback,
+        problem: project.problem,
+        status: project.status,
+      }).then((response) => {
+        resolve(response);
       }).catch((error) => {
         reject(error);
       });
@@ -97,10 +129,18 @@ module.exports = {
 
   updateProject: (project) => {
     return new Promise(async (resolve, reject) => {
-      const { projectid, subjectid, name, expectedresult, problem } = project;
-      db.query(`UPDATE PROJECT SET subjectid = $2, name = $3, expectedResult = $4, problem = $5 WHERE projectid = $1 RETURNING *`,
-        [projectid, subjectid, name, expectedresult, problem]).then((response) => {
-          resolve(response.rows[0]);
+      const { projectId, subjectId, name, expectedResult, problem } = project;
+      Project.update({
+        subjectId,
+        name,
+        expectedResult,
+        problem,
+      }, {
+        where: {
+          projectId,
+        }
+      }).then((response) => {
+          resolve(response);
         }).catch((error) => {
           reject(error);
         });
@@ -109,9 +149,13 @@ module.exports = {
 
   deleteProject: (projectId) => {
     return new Promise((resolve, reject) => {
-      db.query(`UPDATE PROJECT SET deleted = true WHERE projectid = $1`,
-        [projectId]
-      ).then((response) => {
+      Project.update({
+        deleted: true,
+      }, {
+        where: {
+          projectId,
+        }
+      }).then(() => {
         resolve({ status: 'OK' });
       }).catch((error) => {
         reject(error);
@@ -122,10 +166,11 @@ module.exports = {
   addProjectKeywords: (projectId, keywords) => {
     return new Promise((resolve, reject) => {
       for (let i = 0; i < keywords.length; i++) {
-        db.query(
-          `INSERT INTO ABSTRACTS(projectid, keywordid, main) VALUES ($1, $2, $3) RETURNING *`,
-          [projectId, keywords[i].keywordid, keywords[i].main],
-        ).then(() => {
+        Abstracts.create({
+          projectId,
+          keywordId: keywords[i].keywordId,
+          main: keywords[i].main
+        }).then(() => {
           if (i === keywords.length - 1) {
             resolve();
           }
@@ -138,7 +183,11 @@ module.exports = {
 
   removeProjectKeywords: (projectId) => {
     return new Promise((resolve, reject) => {
-      db.query(`DELETE FROM ABSTRACTS WHERE projectid = $1`, [projectId]).then((response) => {
+      Abstracts.destroy({
+        where: {
+          projectId,
+        }
+      }).then(() => {
         resolve();
       }).catch((error) => {
         reject(error);
