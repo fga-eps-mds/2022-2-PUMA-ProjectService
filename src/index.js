@@ -20,6 +20,7 @@ const Subarea = require('./db/model/Subarea');
 const Subject = require('./db/model/Subject');
 const Summarize = require('./db/model/Summarize');
 const Teacher = require('./db/model/Teacher');
+const Abstracts = require('./db/model/Abstracts');
 
 // const syncDb = require('./db/SyncDb');
 
@@ -48,6 +49,7 @@ const app = express();
     await Lectures.sync({ alter: true });
     await Project.sync({ alter: true });
     await Summarize.sync({ alter: true });
+    await Abstracts.sync({ alter: true });
     console.log('Database Inicializado')
   } catch (error) {
     console.log("Erro ao inicializar o banco ->", error);
