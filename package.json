@@ -30,7 +30,7 @@
     "express-fileupload": "^1.2.1",
     "mocha-junit-reporter": "^2.0.2",
     "nyc": "^15.1.0",
-    "pg": "^8.7.1",
+    "pg": "^8.10.0",
     "pg-format": "^1.0.4"
   },
   "devDependencies": {
