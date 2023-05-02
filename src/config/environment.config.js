@@ -13,7 +13,7 @@ module.exports = {
       global.SECRET = process.env.SECRET;
       global.DB_URL = process.env.DB_URL_TEST;
     } else if (process.env.ENVIRONMENT === 'hom') {
-      global.URL_API = 'http://https://puma-projectservice.herokuapp.com';
+      global.URL_API = 'https://puma-projectservice.herokuapp.com';
       global.SECRET = process.env.SECRET;
       global.DB_URL = process.env.DATABASE_URL;
     } else if (process.env.ENVIRONMENT === 'prod') {
