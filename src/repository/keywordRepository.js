@@ -6,7 +6,7 @@ const Keyword = require('../db/model/Keyword');
 const Abstracts = require('../db/model/Abstracts');
 const Summarize = require('../db/model/Summarize');
 const Subject = require('../db/model/Subject');
-const sequelize = require('sequelize');
+const sequelize = require('../db/AppDb');
 
 module.exports = {
   addKeyword: (keyword) => new Promise((resolve, reject) => {
@@ -92,8 +92,8 @@ module.exports = {
         'SELECT k.keywordid, k.keyword, s.name as subjectname, s.subjectid, array_agg(c.userid) FROM summarize JOIN subject s ON summarize.subjectid = s.subjectid JOIN keyword k ON summarize.keywordid = k.keywordid and k.deleted is not true inner join lectures l on l.subjectid = s.subjectid inner join professor p on l.regnumber = p.regnumber inner join common_user c on p.userid = c.userid GROUP BY k.keywordid, s.name,s.subjectid ORDER BY k.keywordid;',
       ).then((results) => {
         resolve(results);
-      }).catch((response) => {
-        reject(response);
+      }).catch((results) => {
+        reject(results);
       });
     });
   },

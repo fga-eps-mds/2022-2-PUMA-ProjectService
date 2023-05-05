@@ -1,5 +1,5 @@
 const db = require('../../dbconfig/dbConfig');
-const sequelize = require('sequelize');
+const sequelize = require('../db/AppDb');
 const Subject = require('../db/model/Subject');
 
 module.exports = {
@@ -14,10 +14,13 @@ module.exports = {
   }),
 
   getSubjects: () => new Promise((resolve, reject) => {
-    sequelize.query(
-      'SELECT s.subjectid, s.name FROM subject s WHERE not(s.deleted) ORDER BY s.subjectid DESC',
-    ).then((results) => {
-      resolve(results);
+    Subject.findAll({
+      where:{
+        deleted: false,
+      },
+      order: [['subjectId', 'DESC']]
+    }).then((response) => {
+      resolve(response);
     }).catch((e) => reject(e));
   }),
 

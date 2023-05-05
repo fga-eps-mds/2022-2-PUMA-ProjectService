@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-str */
 const db = require('../../dbconfig/dbConfig');
 const Lectures = require('../db/model/Lectures');
-const sequelize = require('sequelize');
+const sequelize = require('../db/AppDb');
 
 module.exports = {
   addProfessorSubjectRelation: (input) => new Promise((resolve, reject) => {

@@ -1,6 +1,6 @@
 /* eslint-disable no-multi-str */
 const db = require('../../dbconfig/dbConfig');
-const sequelize = require('sequelize');
+const sequelize = require('../db/AppDb');
 const Subarea = require('../db/model/Subarea');
 const Identifies = require('../db/model/Identifies');
 
