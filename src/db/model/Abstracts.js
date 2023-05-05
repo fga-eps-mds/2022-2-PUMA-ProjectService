@@ -13,7 +13,7 @@ const Abstracts = database.define('Abstracts', {
             key: "keywordId"
         },
     },
-    userId: {
+    projectId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {

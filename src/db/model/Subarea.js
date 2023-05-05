@@ -10,7 +10,7 @@ const Subarea = database.define('Subarea', {
     knowledgeAreaId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
+        unique: 'SUBAREA_UK',
         references: {
             model: {
                 tableName: "Knowledge_Area",
@@ -21,7 +21,8 @@ const Subarea = database.define('Subarea', {
     },
     description: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: 'SUBAREA_UK',
     },
     deleted: {
         type: DataTypes.BOOLEAN,
@@ -29,6 +30,13 @@ const Subarea = database.define('Subarea', {
         defaultValue: false
     },
 }, {
+    indexes: [
+        {
+            unique: true,
+            fields: ['knowledgeAreaId', 'description'],
+            name: 'SUBAREA_UK',
+        }
+    ],
     freezeTableName: true
 })
 

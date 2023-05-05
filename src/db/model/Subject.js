@@ -13,7 +13,7 @@ const Subject = database.define('Subject', {
         unique: true
     },
     courseSyllabus: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING(10000)
     },
     deleted: {
         type: DataTypes.BOOLEAN,

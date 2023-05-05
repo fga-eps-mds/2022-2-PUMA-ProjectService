@@ -34,10 +34,10 @@ module.exports = {
   getSubareasOfSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
     sequelize.query(
-      `select sab.subareaid, sab.description from subject sb \
-      inner join identifies id on sb.subjectid = id.subjectid \
-      inner join subarea sab on id.subareaid = sab.subareaid \
-      where sb.subjectid = ${subjectid}`
+      `select sab.subareaId, sab.description from Subject sb \
+      inner join Identifies id on sb.subjectId = id.subjectId \
+      inner join Subarea sab on id.subareaId = sab.subareaId \
+      where sb.subjectId = ${subjectid}`
     ).then((results) => {
       resolve(results);
     }).catch((e) => reject(e));
@@ -46,14 +46,14 @@ module.exports = {
   removeSubareasOfSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
     sequelize.query(
-      `delete from identifies id \
-      where id.subjectid in \
+      `delete from Identifies id \
+      where id.subjectId in \
       ( \
-        select sb.subjectid \
-        from subject sb \
-        inner join identifies id \
-        on sb.subjectid = id.subjectid \
-        where sb.subjectid = ${subjectid} \
+        select sb.subjectId \
+        from Subject sb \
+        inner join Identifies id \
+        on sb.subjectId = id.subjectId \
+        where sb.subjectId = ${subjectid} \
       ) \
       `
     ).then((results) => {

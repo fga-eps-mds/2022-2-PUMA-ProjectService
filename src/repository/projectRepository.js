@@ -10,11 +10,11 @@ module.exports = {
     return new Promise((resolve, reject) => {
       let results = new Promise(() => { });
       if (user.operation === 'projetos') {
-        results = sequelize.query(`SELECT p.projectid, p.name, p.expectedresult, p.status, p.createdat, s.name AS subject, cu.fullname FROM PROJECT p LEFT JOIN subject s on p.subjectid = s.subjectid LEFT JOIN common_user cu on p.userid = cu.userid WHERE not(p.deleted) ORDER BY p.projectid DESC`);
+        results = sequelize.query(`SELECT p.projectId, p.name, p.expectedResult, p.status, p.createdAt, s.name AS Subject, cu.fullName FROM Project p LEFT JOIN Subject s on p.subjectId = s.subjectId LEFT JOIN Common_User cu on p.userId = cu.userId WHERE not(p.deleted) ORDER BY p.projectId DESC`);
       } else if (user.operation === 'projetos-disciplina') {
-        results = sequelize.query(`SELECT p.projectid, p.name, p.expectedresult, p.status, p.createdat, s.name AS subject, cu.fullname FROM project p LEFT JOIN subject s ON p.subjectid = s.subjectid LEFT JOIN common_user cu ON p.userid = cu.userid WHERE not(p.deleted) and p.subjectid IN (SELECT DISTINCT l.subjectid FROM professor prof INNER JOIN lectures l ON prof.regnumber = l.regnumber WHERE prof.userid = ${user.userId}) ORDER BY p.projectid DESC`);
+        results = sequelize.query(`SELECT p.projectId, p.name, p.expectedResult, p.status, p.createdAt, s.name AS Subject, cu.fullName FROM Project p LEFT JOIN Subject s ON p.subjectId = s.subjectId LEFT JOIN Common_User cu ON p.userId = cu.userId WHERE not(p.deleted) and p.subjectId IN (SELECT DISTINCT l.subjectId FROM Teacher prof INNER JOIN Lectures l ON prof.regNumber = l.regNumber WHERE prof.userId = ${user.userId}) ORDER BY p.projectId DESC`);
       } else {
-        results = sequelize.query(`SELECT p.projectid, p.name, p.expectedresult, p.status, p.createdat, s.name AS subject, cu.fullname FROM PROJECT p LEFT JOIN subject s on p.subjectid = s.subjectid LEFT JOIN common_user cu on p.userid = cu.userid WHERE not(p.deleted) and p.userid = ${user.userId} ORDER BY p.projectid DESC`);
+        results = sequelize.query(`SELECT p.projectId, p.name, p.expectedResult, p.status, p.createdAt, s.name AS Subject, cu.fullName FROM Project p LEFT JOIN Subject s on p.subjectId = s.subjectId LEFT JOIN Common_User cu on p.userId = cu.userId WHERE not(p.deleted) and p.userId = ${user.userId} ORDER BY p.projectId DESC`);
       }
       results.then((response) => {
         resolve(response);

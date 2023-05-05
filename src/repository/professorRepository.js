@@ -17,7 +17,7 @@ module.exports = {
 
   getProfessors: () => new Promise((resolve, reject) => {
     sequelize.query(
-      'Select pf.regnumber, pf.userid, us.fullname, us.email from professor pf left join common_user us on pf.userid = us.userid;',
+      'Select pf.regNumber, pf.userId, us.fullname, us.email from Teacher pf left join Common_User us on pf.userId = us.userId;',
     ).then((results) => {
       resolve(results);
     }).catch((e) => reject(e));
@@ -26,11 +26,11 @@ module.exports = {
   getProfessorsofSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
     sequelize.query(
-      `select pf.regnumber, pf.userid, us.fullname, us.email from subject sb \
-      inner join lectures lt on sb.subjectid = lt.subjectid \
-      inner join professor pf on lt.regnumber = pf.regnumber \
-      left join common_user us on pf.userid = us.userid \
-      where sb.subjectid = ${subjectid}`
+      `select pf.regNumber, pf.userId, us.fullname, us.email from Subject sb \
+      inner join Lectures lt on sb.subjectId = lt.subjectId \
+      inner join Teacher pf on lt.regNumber = pf.regNumber \
+      left join Common_User us on pf.userId = us.userId \
+      where sb.subjectId = ${subjectid}`
     ).then((results) => {
       resolve(results);
     }).catch((e) => reject(e));
@@ -39,14 +39,14 @@ module.exports = {
   removeProfessorsofSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
     sequelize.query(
-      `delete from lectures lt \
-      where lt.subjectid in \
+      `delete from Lectures lt \
+      where lt.subjectId in \
       ( \
-        select sb.subjectid \
-        from subject sb \
-        inner join lectures lt \
-        on sb.subjectid = lt.subjectid \
-        where sb.subjectid = ${subjectid} \
+        select sb.subjectId \
+        from Subject sb \
+        inner join Lectures lt \
+        on sb.subjectId = lt.subjectId \
+        where sb.subjectId = ${subjectid} \
       )`
     ).then((results) => {
       resolve(results);

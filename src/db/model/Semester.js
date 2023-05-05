@@ -10,7 +10,7 @@ const Semester = database.define('Semester', {
     subjectId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
+        unique: 'SEMESTRE_UK',
         references: {
             model: {
                 tableName: "Subject",
@@ -22,14 +22,14 @@ const Semester = database.define('Semester', {
     year: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: 'SEMESTRE_UK',
     },
     semester: {
         type: DataTypes.ENUM({
             values: ['1', '2'],
         }),
         allowNull: false,
-        unique: true,
+        unique: 'SEMESTRE_UK',
     },
     status: {
         type: DataTypes.ENUM({
@@ -42,8 +42,15 @@ const Semester = database.define('Semester', {
         allowNull: false,
         defaultValue: false
     },
-}, {
-    freezeTableName: true
+},{
+    indexes: [
+        {
+            unique: true,
+            fields: ['subjectId', 'year', 'semester'],
+            name: 'SEMESTRE_UK',
+        }
+    ],
+    freezeTableName: true,
 })
 
 module.exports = Semester

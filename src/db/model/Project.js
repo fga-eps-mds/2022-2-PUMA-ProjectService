@@ -20,7 +20,6 @@ const Project = database.define('Project', {
     },
     subjectId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         references: {
             model: {
                 tableName: "Subject",
@@ -31,7 +30,6 @@ const Project = database.define('Project', {
     },
     semesterId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         references: {
             model: {
                 tableName: "Semester",
@@ -41,18 +39,18 @@ const Project = database.define('Project', {
         },
     },
     name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false
     },
     expectedResult: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(1000),
         allowNull: false
     },
     feedback: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING(1000)
     },
     problem: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(1000),
         allowNull: false
     },
     status: {

@@ -5,7 +5,7 @@ const Identifies = database.define('Identifies', {
     subAreaId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
+        unique: 'identifies_UK',
         references: {
             model: {
                 tableName: "Subarea",
@@ -17,7 +17,7 @@ const Identifies = database.define('Identifies', {
     subjectId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
+        unique: 'identifies_UK',
         references: {
             model: {
                 tableName: "Subject",
@@ -27,6 +27,13 @@ const Identifies = database.define('Identifies', {
         },
     },
 }, {
+    indexes: [
+        {
+            unique: true,
+            fields: ['subAreaId', 'subjectId'],
+            name: 'identifies_UK',
+        }
+    ],
     freezeTableName: true,
 })
 

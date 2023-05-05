@@ -53,7 +53,7 @@ module.exports = {
 
   getProjectKeywords: (projectId) => new Promise((resolve, reject) => {
     sequelize.query(
-      `SELECT K.keyword, K.keywordid, A.main FROM abstracts as A JOIN KEYWORD as K on A.keywordid = K.keywordid WHERE projectid = ${projectId}`
+      `SELECT K.keyword, K.keywordId, A.main FROM Abstracts as A JOIN Keyword as K on A.keywordId = K.keywordId WHERE projectId = ${projectId}`
     ).then((results) => {
       resolve(results);
     }).catch((e) => reject(e));
@@ -70,7 +70,7 @@ module.exports = {
 
   getKeywordsAvailbleToProject: () => new Promise((resolve, reject) => {
     sequelize.query(
-      `SELECT DISTINCT k.keywordid, k.keyword FROM summarize JOIN subject s ON summarize.subjectid = s.subjectid JOIN keyword k ON summarize.keywordid = k.keywordid WHERE not(k.deleted) and not(s.deleted)`,
+      `SELECT DISTINCT k.keywordId, k.keyword FROM Summarize JOIN Subject s ON Summarize.subjectId = s.subjectId JOIN keyword k ON Summarize.keywordId = k.keywordId WHERE not(k.deleted) and not(s.deleted)`,
     ).then((results) => {
       resolve(results);
     }).catch((e) => {
@@ -80,7 +80,7 @@ module.exports = {
 
   getKeywordAvailbleToSubject: () => new Promise((resolve, reject) => {
     sequelize.query(
-      `SELECT k.keywordid, k.keyword FROM keyword k LEFT JOIN summarize s ON k.keywordid = s.keywordid WHERE s.keywordid IS NULL and not(k.deleted)`,
+      `SELECT k.keywordId, k.keyword FROM Keyword k LEFT JOIN Summarize s ON k.keywordId = s.keywordId WHERE s.keywordId IS NULL and not(k.deleted)`,
     ).then((results) => {
       resolve(results);
     }).catch((e) => reject(e));
@@ -89,7 +89,7 @@ module.exports = {
   getKeywordsAlternative: () => {
     return new Promise((resolve, reject) => {
       sequelize.query(
-        'SELECT k.keywordid, k.keyword, s.name as subjectname, s.subjectid, array_agg(c.userid) FROM summarize JOIN subject s ON summarize.subjectid = s.subjectid JOIN keyword k ON summarize.keywordid = k.keywordid and k.deleted is not true inner join lectures l on l.subjectid = s.subjectid inner join professor p on l.regnumber = p.regnumber inner join common_user c on p.userid = c.userid GROUP BY k.keywordid, s.name,s.subjectid ORDER BY k.keywordid;',
+        'SELECT k.keywordId, k.keyword, s.name as subjectName, s.subjectId, array_agg(c.userId) FROM Summarize JOIN Subject s ON Summarize.subjectId = s.subjectId JOIN Keyword k ON Summarize.keywordId = k.keywordId and k.deleted is not true inner join Lectures l on l.subjectId = s.subjectId inner join Teacher p on l.regNumber = p.regNumber inner join Common_User c on p.userId = c.userId GROUP BY k.keywordId, s.name,s.subjectId ORDER BY k.keywordId;',
       ).then((results) => {
         resolve(results);
       }).catch((results) => {
@@ -101,7 +101,7 @@ module.exports = {
   getSubjects: () => {
     return new Promise((resolve, reject) => {
       sequelize.query(
-        'SELECT subjectId as value, name as text FROM subject;',
+        'SELECT subjectId as value, name as text FROM Subject;',
       ).then((results) => {
         resolve(results);
       }).catch((response) => {
@@ -172,10 +172,10 @@ module.exports = {
   getKeywordsOfSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
     sequelize.query(
-      `select kw.keyword, kw.keywordid from subject sb \
-      inner join summarize sm on sb.subjectid = sm.subjectid \
-      inner join keyword kw on sm.keywordid = kw.keywordid \
-      where sb.subjectid = ${subjectid}`
+      `select kw.keyword, kw.keywordId from Subject sb \
+      inner join Summarize sm on sb.subjectId = sm.subjectId \
+      inner join Keyword kw on sm.keywordId = kw.keywordId \
+      where sb.subjectId = ${subjectid}`
     ).then((results) => {
       resolve(results);
     }).catch((e) => reject(e));
@@ -184,14 +184,14 @@ module.exports = {
   removeKeywordsOfSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
     sequelize.query(
-      `delete from summarize sm \
-      where sm.subjectid in \
+      `delete from Summarize sm \
+      where sm.subjectId in \
       ( \
-        select sb.subjectid \
-        from subject sb \
-        inner join summarize sm \
-        on sb.subjectid = sm.subjectid \
-        where sb.subjectid = ${subjectid} \
+        select sb.subjectId \
+        from Subject sb \
+        inner join Summarize sm \
+        on sb.subjectId = sm.subjectId \
+        where sb.subjectId = ${subjectid} \
       )`
     ).then((results) => {
       resolve(results);
