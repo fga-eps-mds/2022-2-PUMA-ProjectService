@@ -25,10 +25,10 @@ module.exports = {
   }),
 
   getSubject: (input) => new Promise((resolve, reject) => {
-    const { subjectId } = input;
+    const { subjectid } = input;
     Subject.findOne({
       where: {
-        subjectId,
+        subjectId: subjectid,
       }
     }).then((response) => {
         resolve(response);
@@ -57,7 +57,9 @@ module.exports = {
     Subject.update({
       deleted: true,
     }, {
-      subjectId,
+      where: {
+        subjectId,
+      }
     }).then((response) => {
         resolve(response);
       }).catch((response) => {

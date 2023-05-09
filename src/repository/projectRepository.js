@@ -10,11 +10,11 @@ module.exports = {
     return new Promise((resolve, reject) => {
       let results = new Promise(() => { });
       if (user.operation === 'projetos') {
-        results = sequelize.query(`SELECT p.projectId, p.name, p.expectedResult, p.status, p.createdAt, s.name AS Subject, cu.fullName FROM Project p LEFT JOIN Subject s on p.subjectId = s.subjectId LEFT JOIN Common_User cu on p.userId = cu.userId WHERE not(p.deleted) ORDER BY p.projectId DESC`);
+        results = sequelize.query(`SELECT p."projectId", p.name, p."expectedResult", p.status, p."createdAt", s.name AS "Subject", cu."fullName" FROM "Project" p LEFT JOIN "Subject" s on p."subjectId" = s."subjectId" LEFT JOIN "Common_User" cu on p."userId" = cu."userId" WHERE not(p.deleted) ORDER BY p."projectId" DESC`);
       } else if (user.operation === 'projetos-disciplina') {
-        results = sequelize.query(`SELECT p.projectId, p.name, p.expectedResult, p.status, p.createdAt, s.name AS Subject, cu.fullName FROM Project p LEFT JOIN Subject s ON p.subjectId = s.subjectId LEFT JOIN Common_User cu ON p.userId = cu.userId WHERE not(p.deleted) and p.subjectId IN (SELECT DISTINCT l.subjectId FROM Teacher prof INNER JOIN Lectures l ON prof.regNumber = l.regNumber WHERE prof.userId = ${user.userId}) ORDER BY p.projectId DESC`);
+        results = sequelize.query(`SELECT p."projectId", p.name, p."expectedResult", p.status, p."createdAt", s.name AS "Subject", cu."fullName" FROM "Project" p LEFT JOIN "Subject" s ON p."subjectId" = s."subjectId" LEFT JOIN "Common_User" cu ON p."userId" = cu."userId" WHERE not(p.deleted) and p."subjectId" IN (SELECT DISTINCT l."subjectId" FROM "Teacher" prof INNER JOIN "Lectures" l ON prof."regNumber" = l."regNumber" WHERE prof."userId" = ${user.userid}) ORDER BY p."projectId" DESC`);
       } else {
-        results = sequelize.query(`SELECT p.projectId, p.name, p.expectedResult, p.status, p.createdAt, s.name AS Subject, cu.fullName FROM Project p LEFT JOIN Subject s on p.subjectId = s.subjectId LEFT JOIN Common_User cu on p.userId = cu.userId WHERE not(p.deleted) and p.userId = ${user.userId} ORDER BY p.projectId DESC`);
+        results = sequelize.query(`SELECT p."projectId", p.name, p."expectedResult", p.status, p."createdAt", s.name AS "Subject", cu."fullName" FROM "Project" p LEFT JOIN "Subject" s on p."subjectId" = s."subjectId" LEFT JOIN "Common_User" cu on p."userId" = cu."userId" WHERE not(p.deleted) and p."userId" = ${user.userid} ORDER BY p."projectId" DESC`);
       }
       results.then((response) => {
         resolve(response);
@@ -73,35 +73,37 @@ module.exports = {
     });
   },
 
-  evaluateProject: ({ projectId, status, feedback }) => {
+  evaluateProject: ({ projectid, status, feedback }) => {
     return new Promise((resolve, reject) => {
       Project.update({
         status,
         feedback,
       }, {
         where: {
-          projectId,
-        }
+          projectId: projectid,
+        },
+        returning: true,
       }).then((response) => {
-        resolve(response);
+        resolve(response[1][0]);
       }).catch((error) => {
         reject(error);
       });
     });
   },
 
-  reallocateProject: ({ projectId, status, feedback, subjectId }) => {
+  reallocateProject: ({ projectid, status, feedback, subjectid }) => {
     return new Promise((resolve, reject) => {
       Project.update({
         status,
         feedback,
-        subjectId,
+        subjectId: subjectid,
       }, {
         where: {
-          projectId,
-        }
+          projectId: projectid,
+        },
+        returning: true,
       }).then((response) => {
-        resolve(response);
+        resolve(response[1][0]);
       }).catch((error) => {
         reject(error);
       });
@@ -129,7 +131,11 @@ module.exports = {
 
   updateProject: (project) => {
     return new Promise(async (resolve, reject) => {
-      const { projectId, subjectId, name, expectedResult, problem } = project;
+      const projectId = project.projectid;
+      const subjectId = project.subjectid;
+      const name = project.name;
+      const expectedResult = project.expectedresult;
+      const problem = project.problem; 
       Project.update({
         subjectId,
         name,
@@ -138,9 +144,10 @@ module.exports = {
       }, {
         where: {
           projectId,
-        }
+        },
+        returning: true,
       }).then((response) => {
-          resolve(response);
+          resolve(response[1][0]);
         }).catch((error) => {
           reject(error);
         });
@@ -168,7 +175,7 @@ module.exports = {
       for (let i = 0; i < keywords.length; i++) {
         Abstracts.create({
           projectId,
-          keywordId: keywords[i].keywordId,
+          keywordId: keywords[i].keywordid,
           main: keywords[i].main
         }).then(() => {
           if (i === keywords.length - 1) {

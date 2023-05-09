@@ -16,10 +16,10 @@ module.exports = {
   }),
 
   addSubjectSubareaRelation: (input) => new Promise((resolve, reject) => {
-    const { subareaId, subjecId } = input;
+    const { subareaid, subjectid } = input;
     Identifies.create({
-      subareaId,
-      subjectId,
+      subAreaId: subareaid,
+      subjectId: subjectid,
     }).then((response) => {
       resolve(response);
     }).catch((e) => reject(e));
@@ -34,10 +34,10 @@ module.exports = {
   getSubareasOfSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
     sequelize.query(
-      `select sab.subareaId, sab.description from Subject sb \
-      inner join Identifies id on sb.subjectId = id.subjectId \
-      inner join Subarea sab on id.subareaId = sab.subareaId \
-      where sb.subjectId = ${subjectid}`
+      `select sab."subAreaId", sab.description from "Subject" sb \
+      inner join "Identifies" id on sb."subjectId" = id."subjectId" \
+      inner join "Subarea" sab on id."subAreaId" = sab."subAreaId" \
+      where sb."subjectId" = ${subjectid}`
     ).then((results) => {
       resolve(results);
     }).catch((e) => reject(e));
@@ -46,14 +46,14 @@ module.exports = {
   removeSubareasOfSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
     sequelize.query(
-      `delete from Identifies id \
-      where id.subjectId in \
+      `delete from "Identifies" id \
+      where id."subjectId" in \
       ( \
-        select sb.subjectId \
-        from Subject sb \
-        inner join Identifies id \
-        on sb.subjectId = id.subjectId \
-        where sb.subjectId = ${subjectid} \
+        select sb."subjectId" \
+        from "Subject" sb \
+        inner join "Identifies" id \
+        on sb."subjectId" = id."subjectId" \
+        where sb."subjectId" = ${subjectid} \
       ) \
       `
     ).then((results) => {
