@@ -11,33 +11,45 @@ module.exports = {
         const subjectid = await projectRepository.getSubjectByKeyword(mainKeyword);
 
         const projectData = await projectRepository.addProject({ ...project, subjectid });
-        await projectRepository.addProjectKeywords(projectData.projectid, project.keywords);
+        await projectRepository.addProjectKeywords(projectData.projectId, project.keywords);
 
-        resolve({ ...projectData });
+        resolve({
+          projectid: projectData.projectId,
+          userid: projectData.userId,
+          subjectid: projectData.subjectId,
+          semesterid: projectData.semesterId,
+          name: projectData.name,
+          expectedresult: projectData.expectedResult,
+          feedback: projectData.feedback,
+          problem: projectData.problem,
+          status: projectData.status,
+          deleted: projectData.deleted,
+          createdAt: projectData.createdAt,
+        });
       } catch (error) {
         reject(error);
       }
     })
   },
 
-  getProjectData: (projectId) => {
+  getProjectData: (projectid) => {
     return new Promise(async (resolve, reject) => {
       try {
         let User = null;
         let Subject = null;
         let Semester = null;
         let Keywords = null;
-        const project = await projectRepository.getProjectData(projectId);
+        const project = await projectRepository.getProjectData(projectid);
 
-        User = await projectRepository.getUserData(project.userid);
-        Keywords = await keywordRepository.getProjectKeywords(projectId);
+        User = await projectRepository.getUserData(project.userId);
+        Keywords = await keywordRepository.getProjectKeywords(projectid);
 
-        if (project.subjectid) {
-          Subject = await subjectRepository.getSubject({ subjectid: project.subjectid });
+        if (project.subjectId) {
+          Subject = await subjectRepository.getSubject({ subjectid: project.subjectId });
         }
 
-        if (project.semesterid) {
-          Semester = await semesterRepository.getSemester(project.semesterid);
+        if (project.semesterId) {
+          Semester = await semesterRepository.getSemester(project.semesterId);
         }
 
         resolve({ ...project, User, Subject, Semester, Keywords });

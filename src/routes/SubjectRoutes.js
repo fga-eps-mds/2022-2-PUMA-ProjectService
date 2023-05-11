@@ -57,8 +57,8 @@ routes.put('/subject/:subjectid', (req, res) => {
   });
 });
 
-routes.delete('/subject/:subjectid', (req, res) => {
-  subjectController.deleteSubject(req.params.subjectid).then((response) => {
+routes.delete('/subject/:subjectId', (req, res) => {
+  subjectController.deleteSubject(req.params.subjectId).then((response) => {
     res.status(200).json(response.data);
   }).catch((error) => {
     res.status(400).json({ error });

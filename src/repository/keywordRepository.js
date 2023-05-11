@@ -2,123 +2,131 @@
 /* eslint-disable import/order */
 const db = require('../../dbconfig/dbConfig');
 const format = require('pg-format');
+const Keyword = require('../db/model/Keyword');
+const Abstracts = require('../db/model/Abstracts');
+const Summarize = require('../db/model/Summarize');
+const Subject = require('../db/model/Subject');
+const sequelize = require('../db/AppDb');
 
 module.exports = {
   addKeyword: (keyword) => new Promise((resolve, reject) => {
-    db.query(
-      'INSERT INTO KEYWORD(keyword) VALUES ($1) RETURNING *',
-      [keyword],
-    ).then((response) => {
-      resolve(response.rows[0]);
+    Keyword.create({ keyword }).then((response) => {
+      resolve(response);
     }).catch((e) => {
       reject(e);
     });
   }),
 
   addManyKeywords: (keywords) => new Promise((resolve, reject) => {
-    db.query(
-      format('INSERT INTO KEYWORD(keyword) VALUES %L RETURNING *', keywords),
-    ).then((response) => {
-      resolve(response.rows);
+    Keyword.bulkCreate(keywords).then((response) => {
+      resolve(response);
     }).catch((e) => {
       reject(e);
     });
   }),
 
   getAllKeywords: () => new Promise((resolve, reject) => {
-    db.query(
-      'SELECT * FROM keyword ORDER BY keywordid DESC',
-    ).then((response) => {
-      resolve(response.rows);
+    Keyword.findAll({
+      order: [['keywordId', 'DESC']]
+    }).then((response) => {
+      resolve(response);
     }).catch((e) => reject(e));
   }),
 
   getKeywordByName: (keyword) => new Promise((resolve, reject) => {
-    db.query(
-      'SELECT * FROM KEYWORD WHERE keyword = $1',
-      [keyword],
-    ).then((response) => {
-      resolve(response.rows[0]);
+    Keyword.findAll({
+      where: {
+        keyword,
+      }
+    }).then((response) => {
+      resolve(response);
     }).catch((e) => reject(e));
   }),
 
   getKeywordById: (keywordId) => new Promise((resolve, reject) => {
-    db.query(
-      'SELECT * FROM KEYWORD WHERE keywordId = $1',
-      [keywordId],
-    ).then((response) => {
-      resolve(response.rows[0]);
+    Keyword.findAll({
+      keywordId,
+    }).then((response) => {
+      resolve(response);
     }).catch((e) => reject(e));
   }),
 
   getProjectKeywords: (projectId) => new Promise((resolve, reject) => {
-    db.query(
-      'SELECT K.keyword, K.keywordid, A.main FROM abstracts as A JOIN KEYWORD as K on A.keywordid = K.keywordid WHERE projectid = $1',
-      [projectId],
-    ).then((response) => {
-      resolve(response.rows);
-    }).catch((e) => reject(e));
+    sequelize.query(
+      `SELECT K.keyword, K."keywordId", A.main FROM "Abstracts" as A JOIN "Keyword" as K on A."keywordId" = K."keywordId" WHERE "projectId" = ${projectId}`
+    ).then((results) => {
+      resolve(results);
+    }).catch((e) => {
+      console.log(e);
+      reject(e);
+    });
   }),
 
   addKeywordSubjectRelation: (payload) => new Promise((resolve, reject) => {
     const { keywordid, subjectid } = payload;
-    db.query(
-      'INSERT INTO summarize(keywordid, subjectid) VALUES ($1,$2) RETURNING *',
-      [keywordid, subjectid],
-    ).then((response) => resolve(response.rows[0]))
+    Summarize.create({
+      keywordId: keywordid,
+      subjectId: subjectid,
+    }).then((response) => resolve(response))
       .catch((e) => reject(e));
   }),
 
   getKeywordsAvailbleToProject: () => new Promise((resolve, reject) => {
-    db.query(
-      'SELECT DISTINCT k.keywordid, k.keyword FROM summarize JOIN subject s ON summarize.subjectid = s.subjectid JOIN keyword k ON summarize.keywordid = k.keywordid WHERE not(k.deleted) and not(s.deleted)',
-    ).then((response) => {
-      resolve(response.rows);
+    sequelize.query(
+      `SELECT DISTINCT k."keywordId", k.keyword FROM "Summarize" JOIN "Subject" s ON "Summarize"."subjectId" = s."subjectId" JOIN "Keyword" k ON "Summarize"."keywordId" = k."keywordId" WHERE not(k.deleted) and not(s.deleted)`,
+    ).then((results) => {
+      resolve(results);
     }).catch((e) => {
+      console.log(e);
       reject(e);
     });
   }),
 
   getKeywordAvailbleToSubject: () => new Promise((resolve, reject) => {
-    db.query(
-      'SELECT k.keywordid, k.keyword FROM keyword k LEFT JOIN summarize s ON k.keywordid = s.keywordid WHERE s.keywordid IS NULL and not(k.deleted)',
-    ).then((response) => {
-      resolve(response.rows);
+    sequelize.query(
+      `SELECT k."keywordId", k.keyword FROM "Keyword" k LEFT JOIN "Summarize" s ON k."keywordId" = s."keywordId" WHERE s."keywordId" IS NULL and not(k.deleted)`,
+    ).then((results) => {
+      resolve(results[0]);
     }).catch((e) => reject(e));
   }),
 
   getKeywordsAlternative: () => {
     return new Promise((resolve, reject) => {
-      db.query(
-        'SELECT k.keywordid, k.keyword, s.name as subjectname, s.subjectid, array_agg(c.userid) FROM summarize JOIN subject s ON summarize.subjectid = s.subjectid JOIN keyword k ON summarize.keywordid = k.keywordid and k.deleted is not true inner join lectures l on l.subjectid = s.subjectid inner join professor p on l.regnumber = p.regnumber inner join common_user c on p.userid = c.userid GROUP BY k.keywordid, s.name,s.subjectid ORDER BY k.keywordid;',
-      ).then((response) => {
-        resolve(response.rows);
-      }).catch((response) => {
-        reject(response);
+      sequelize.query(
+        'SELECT k."keywordId", k.keyword, s.name as "subjectName", s."subjectId", array_agg(c."userId") FROM "Summarize" su JOIN "Subject" s ON su."subjectId" = s."subjectId" JOIN "Keyword" k ON su."keywordId" = k."keywordId" and k.deleted is not true inner join "Lectures" l on l."subjectId" = s."subjectId" inner join "Teacher" p on l."regNumber" = p."regNumber" inner join "Common_User" c on p."userId" = c."userId" GROUP BY k."keywordId", s.name,s."subjectId" ORDER BY k."keywordId";',
+      ).then((results) => {
+        resolve(results);
+      }).catch((results) => {
+        console.log(results);
+        reject(results);
       });
     });
   },
 
   getSubjects: () => {
     return new Promise((resolve, reject) => {
-      db.query(
-        'SELECT subjectId as value, name as text FROM subject;',
-      ).then((response) => {
-        resolve(response.rows);
+      sequelize.query(
+        'SELECT "subjectId" as value, name as text FROM "Subject";',
+      ).then((results) => {
+        resolve(results);
       }).catch((response) => {
         reject(response);
       });
     });
   },
 
-  updateKeyword: (keywordid, newKeyword) => {
+    updateKeyword: (keywordid, newKeyword) => {
     try {
       return new Promise((resolve, reject) => {
-        db.query(
-          'UPDATE KEYWORD SET keyword = $1 where keywordid = $2 RETURNING *;',
-          [newKeyword, keywordid]
-        ).then((response) => {
-          resolve(response.rows[0]);
+        Keyword.update({
+          keyword: newKeyword,
+        }, {
+          where: {
+            keywordId: keywordid
+          },
+          returning: true,
+        }).then((response) => {
+          resolve(response[1][0]);
         }).catch((e) => {
           reject(e);
         });
@@ -131,11 +139,15 @@ module.exports = {
   deleteKeyword: (keywordid) => {
     try {
       return new Promise((resolve, reject) => {
-        db.query(
-          'UPDATE KEYWORD SET deleted = true where keywordid = $1  RETURNING *;',
-          [keywordid]
-        ).then((response) => {
-          resolve(response.rows);
+        Keyword.update({
+          deleted: true,
+        }, {
+          where: {
+            keywordId: keywordid,
+          },
+          returning: true,
+        }).then((response) => {
+          resolve(response[1]);
         }).catch((e) => {
           reject(e);
         });
@@ -148,11 +160,16 @@ module.exports = {
   updateSubjectKeyword: (keywordid, subjectid) => {
     try {
       return new Promise((resolve, reject) => {
-        db.query(
-          'UPDATE public.summarize SET keywordid = $1, subjectid=$2 WHERE keywordid = $1 RETURNING *;',
-          [keywordid, subjectid]
-        ).then((response) => {
-          resolve(response.rows);
+        Summarize.update({
+          keywordId: keywordid,
+          subjectId: subjectid,
+        }, {
+          where: {
+            keywordId: keywordid,
+          },
+          returning: true,
+        }).then((response) => {
+          resolve(response[1]);
         }).catch((e) => {
           reject(e);
         });
@@ -164,32 +181,30 @@ module.exports = {
 
   getKeywordsOfSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
-    db.query(
-      'select kw.keyword, kw.keywordid from subject sb \
-      inner join summarize sm on sb.subjectid = sm.subjectid \
-      inner join keyword kw on sm.keywordid = kw.keywordid \
-      where sb.subjectid = $1',
-      [subjectid],
-    ).then((response) => {
-      resolve(response.rows);
+    sequelize.query(
+      `select kw.keyword, kw."keywordId" from "Subject" sb \
+      inner join "Summarize" sm on sb."subjectId" = sm."subjectId" \
+      inner join "Keyword" kw on sm."keywordId" = kw."keywordId" \
+      where sb."subjectId" = ${subjectid}`
+    ).then((results) => {
+      resolve(results);
     }).catch((e) => reject(e));
   }),
 
   removeKeywordsOfSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
-    db.query(
-      'delete from summarize sm \
-      where sm.subjectid in \
+    sequelize.query(
+      `delete from "Summarize" sm \
+      where sm."subjectId" in \
       ( \
-        select sb.subjectid \
-        from subject sb \
-        inner join summarize sm \
-        on sb.subjectid = sm.subjectid \
-        where sb.subjectid = $1 \
-      )',
-      [subjectid]
-    ).then((response) => {
-      resolve(response.rows);
+        select sb."subjectId" \
+        from "Subject" sb \
+        inner join "Summarize" sm \
+        on sb."subjectId" = sm."subjectId" \
+        where sb."subjectId" = ${subjectid} \
+      )`
+    ).then((results) => {
+      resolve(results);
     }).catch((e) => reject(e));
   }),
 };

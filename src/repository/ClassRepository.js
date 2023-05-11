@@ -1,35 +1,39 @@
 const db = require('../../dbconfig/dbConfig');
+const Classes = require('../db/model/Classes');
+const Classes_Teacher = require('../db/model/Classes_Teacher');
+const Classes_Schedule = require('../db/model/Classes_Schedule');
 
 module.exports = {
   getClasses: () => new Promise((resolve, reject) => {
-    db.query(
-      'SELECT * FROM CLASSES',
-    ).then((response) => {
-      resolve(response.rows);
+    Classes.findAll().then((response) => {
+      resolve(response);
     }).catch((e) => reject(e));
   }),
 
   getClass: (input) => new Promise((resolve, reject) => {
     const { classid } = input;
-    db.query(
-      'SELECT * FROM CLASSES where classId = $1',
-      [classid],
-    )
+    Classes.findAll({
+      where: { 
+        classId: classid 
+      }
+    })
       .then((responseClasses) => {
-        let res = {class: responseClasses.rows[0], teachers: '', schedules: ''};
-        db.query(
-          'SELECT * FROM CLASSES_TEACHER where classId = $1',
-          [classid],
-        )
+        let res = {class: responseClasses[0], teachers: '', schedules: ''};
+        Classes_Teacher.findAll({
+          where: {
+            classId: classid
+          }
+        })
         .then((responseTeachers) => {
-          res.teachers = responseTeachers.rows;
+          res.teachers = responseTeachers;
 
-          db.query(
-            'SELECT * FROM CLASSES_SCHEDULE where classId = $1',
-            [classid],
-          )
+          Classes_Schedule.findAll({
+            where: {
+              classId: classid
+            }
+          })
             .then((responseSchedules) => {
-              res.schedules = responseSchedules.rows;
+              res.schedules = responseSchedules;
               resolve(res);
             }).catch((response) => {
               reject(response);
@@ -46,73 +50,82 @@ module.exports = {
     const { subjectId, classCode, year, semester, password, classid, userId, classesTeacher, classesSchedule } = input;
 
     if(classid === '0'){
-      db.query(
-        'INSERT INTO CLASSES(subjectId, classCode, year, semester, password) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [subjectId, classCode, year, semester, password],
-      ).then((response) => {
+      Classes.create({
+        subjectId,
+        classCode,
+        year,
+        semester,
+        password,
+      }).then((response) => {
         for(let i=0; i<classesTeacher.length; i++){
-          db.query(
-            'INSERT INTO CLASSES_TEACHER(userId, classId) VALUES ($1, $2) RETURNING *',
-            [classesTeacher[i], response.rows[0].classid],
-          ).then(() => {
+          Classes_Teacher.create({
+            userId: classesTeacher[i],
+            classId: response.classId,
+          }).then(() => {
           }).catch((e) => reject(e));
         }
 
         for(let i=0; i<classesSchedule.length; i++){
-          db.query(
-            'INSERT INTO CLASSES_SCHEDULE(classId, day, start, finish) VALUES ($1, $2, $3, $4) RETURNING *',
-            [response.rows[0].classid, classesSchedule[i].day, classesSchedule[i].start, classesSchedule[i].end],
-          ).then(() => {
+          Classes_Schedule.create({
+            classId: response.classId,
+            day: classesSchedule[i].day,
+            start: classesSchedule[i].start,
+            finish: classesSchedule[i].end,
+          }).then(() => {
           }).catch((e) => reject(e));
         }
 
-        resolve(response.rows[0]);
+        resolve(response[0]);
       }).catch((e) => reject(e));
     }
     else {
-      db.query(
-        'UPDATE classes \
-          SET subjectId = $1, classCode = $2, year = $3, semester = $4, password= $5 \
-          WHERE classId = $6  RETURNING *',
-        [subjectId, classCode, year, semester, password, classid],
-      )
+      Classes.update({
+        subjectId,
+        classCode,
+        year,
+        semester,
+        password,
+      }, {
+        where: {
+          classId: classid,
+        }
+      })
         .then((response) => {
-
-          db.query(
-            'DELETE FROM CLASSES_TEACHER \
-              WHERE classId = $1  RETURNING *',
-            [classid],
-          )
-          .then(() => {
+          Classes_Teacher.destroy({
+            where: {
+              classId: classid
+            }
+          }).then(() => {
             for(let i=0; i<classesTeacher.length; i++){
-              db.query(
-                'INSERT INTO CLASSES_TEACHER(userId, classId) VALUES ($1, $2) RETURNING *',
-                [classesTeacher[i], classid],
-              ).then(() => {
+              Classes_Teacher.create({
+                userId: classesTeacher[i],
+                classId: classid,
+              }).then(() => {
               }).catch((e) => reject(e));
             }
           }).catch((e) => {
             reject(e);
           });
 
-          db.query(
-            'DELETE FROM CLASSES_SCHEDULE \
-              WHERE classId = $1  RETURNING *',
-            [classid],
-          )
-          .then(() => {
+          Classes_Schedule.destroy({
+            where: {
+              classId: classid,
+            }
+          }).then(() => {
             for(let i=0; i<classesSchedule.length; i++){
-              db.query(
-                'INSERT INTO CLASSES_SCHEDULE(classId, day, start, finish) VALUES ($1, $2, $3, $4) RETURNING *',
-                [classid, classesSchedule[i].day, classesSchedule[i].start, classesSchedule[i].end],
-              ).then((res) => {
+              Classes_Schedule.create({
+                classId: classid,
+                day: classesSchedule[i].day,
+                start: classesSchedule[i].start,
+                finish: classesSchedule[i].end,
+              }).then((res) => {
               }).catch((e) => reject(e));
             }
           }).catch((e) => {
             reject(e);
           });
 
-        resolve(response.rows);
+        resolve(response);
         }).catch((response) => {
           reject(response);
         });
@@ -120,11 +133,14 @@ module.exports = {
   }),
 
   deleteClass: (classid) => new Promise((resolve, reject) => {
-    db.query(
-      'UPDATE classes SET deleted = true WHERE classId = $1 RETURNING *',
-      [classid])
-      .then((response) => {
-        resolve(response.rows);
+    Classes.update({
+      deleted: true,
+    }, {
+      where: {
+        classId: classid,
+      }
+    }).then((response) => {
+        resolve(response);
       }).catch((response) => {
         reject(response);
       });
