@@ -1,12 +1,14 @@
 const db = require('../../dbconfig/dbConfig');
+const Semester = require('../db/model/Semester');
 
 module.exports = {
     getSemester: (semesterId) => new Promise((resolve, reject) => {
-        db.query(
-            'SELECT * FROM SEMESTER WHERE subjectId = $1',
-            [semesterId],
-        ).then((response) => {
-            resolve(response.rows[0]);
+        Semester.findAll({
+            where: {
+                semesterId,
+            }
+        }).then((response) => {
+            resolve(response);
         }).catch((e) => reject(e));
     }),
 };

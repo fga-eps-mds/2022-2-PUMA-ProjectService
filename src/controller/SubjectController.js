@@ -74,10 +74,9 @@ module.exports = {
     getSubjects: () => new Promise(async (resolve, reject) => {
         try {
             const response = await subjectRepository.getSubjects();
-
             let professors = null;
             for(let i = 0; i < response.length; i++){
-                professors = await professorRepository.getProfessorsofSubject({"subjectid": response[i].subjectid});
+                professors = await professorRepository.getProfessorsofSubject({subjectid: response[i].subjectId});
                 response[i]["professors"] = professors;
             }
             
@@ -170,9 +169,9 @@ const subjectUtils = {
                 delete keyword.deleted;
             }
             res = [...res, keyword];
-            keywordRepository.addKeywordSubjectRelation({
+            await keywordRepository.addKeywordSubjectRelation({
                 keywordid: keyword.keywordid,
-                subjectid: subject.subjectid,
+                subjectid: subject.subjectId,
             });
         }
         return res;
@@ -182,7 +181,7 @@ const subjectUtils = {
         for await (const subarea of subareas) {
             await subareaRepository.addSubjectSubareaRelation({
                 subareaid: subarea.subareaid,
-                subjectid: subject.subjectid,
+                subjectid: subject.subjectId,
             });
         }
     },
@@ -190,8 +189,8 @@ const subjectUtils = {
     addSubjectProfessorRelation: async (subject, professors) => {
         for await (const professor of professors) {
             await professorRepository.addProfessorSubjectRelation({
-                regNumber: professor.regnumber,
-                subjectid: subject.subjectid,
+                regnumber: professor.regnumber,
+                subjectid: subject.subjectId,
             });
         }
     },

@@ -1,18 +1,18 @@
 const db = require('../../dbconfig/dbConfig');
+const knowledge_Area = require('../db/model/Knowledge_Area');
 
 module.exports = {
   addKnowledgeArea: (input) => new Promise((resolve, reject) => {
     const { knowledgeArea } = input;
-    db.query(
-      'INSERT INTO KNOWLEDGE_AREA(knowledgeArea) VALUES ($1) RETURNING *',
-      [knowledgeArea],
-    ).then((response) => {
-      resolve(response.rows[0].knowledgeAreaId);
+    knowledge_Area.create({
+      knowledgeArea,
+    }).then((response) => {
+      resolve(response.knowledgeAreaId);
     }).catch((e) => reject(e));
   }),
   getKnowledgeAreas: () => new Promise((resolve, reject) => {
-    db.query('SELECT * FROM KNOWLEDGE_AREA').then((response) => {
-      resolve(response.rows);
+    knowledge_Area.findAll().then((response) => {
+      resolve(response);
     }).catch((e) => reject(e));
   }),
 };

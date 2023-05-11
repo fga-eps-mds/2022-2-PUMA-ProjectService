@@ -1,55 +1,58 @@
 /* eslint-disable no-multi-str */
 const db = require('../../dbconfig/dbConfig');
+const Lectures = require('../db/model/Lectures');
+const sequelize = require('../db/AppDb');
 
 module.exports = {
   addProfessorSubjectRelation: (input) => new Promise((resolve, reject) => {
-    const { regNumber, subjectid } = input;
-    db.query(
-      'INSERT INTO lectures(regNumber, subjectid) VALUES ($1,$2) RETURNING *',
-      [regNumber, subjectid],
-    ).then((response) => {
-      resolve(response.rows);
+    const { regnumber, subjectid } = input;
+    Lectures.create({
+      regNumber: regnumber,
+      subjectId: subjectid,
+    }).then((response) => {
+      resolve(response);
     })
       .catch((e) => reject(e));
   }),
 
   getProfessors: () => new Promise((resolve, reject) => {
-    db.query(
-      'Select pf.regnumber, pf.userid, us.fullname, us.email from professor pf left join common_user us on pf.userid = us.userid;',
-    ).then((response) => {
-      resolve(response.rows);
+    sequelize.query(
+      'Select pf."regNumber", pf."userId", us."fullName", us.email from "Teacher" pf left join "Common_User" us on pf."userId" = us."userId";',
+    ).then((results) => {
+      resolve(results[0]);
     }).catch((e) => reject(e));
   }),
 
   getProfessorsofSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
-    db.query(
-      'select pf.regnumber, pf.userid, us.fullname, us.email from subject sb \
-      inner join lectures lt on sb.subjectid = lt.subjectid \
-      inner join professor pf on lt.regnumber = pf.regnumber \
-      left join common_user us on pf.userid = us.userid \
-      where sb.subjectid = $1',
-      [subjectid],
-    ).then((response) => {
-      resolve(response.rows);
-    }).catch((e) => reject(e));
+    sequelize.query(
+      `select pf."regNumber", pf."userId", us."fullName", us.email from "Subject" sb \
+      inner join "Lectures" lt on sb."subjectId" = lt."subjectId" \
+      inner join "Teacher" pf on lt."regNumber" = pf."regNumber" \
+      left join "Common_User" us on pf."userId" = us."userId" \
+      where sb."subjectId" = ${subjectid}`
+    ).then((results) => {
+      resolve(results);
+    }).catch((e) => {
+      console.log(e);
+      reject(e);
+    });
   }),
 
   removeProfessorsofSubject: (input) => new Promise((resolve, reject) => {
     const { subjectid } = input;
-    db.query(
-      'delete from lectures lt \
-      where lt.subjectid in \
+    sequelize.query(
+      `delete from "Lectures" lt \
+      where lt."subjectId" in \
       ( \
-        select sb.subjectid \
-        from subject sb \
-        inner join lectures lt \
-        on sb.subjectid = lt.subjectid \
-        where sb.subjectid = $1 \
-      )',
-      [subjectid],
-    ).then((response) => {
-      resolve(response.rows);
+        select sb."subjectId" \
+        from "Subject" sb \
+        inner join "Lectures" lt \
+        on sb."subjectId" = lt."subjectId" \
+        where sb."subjectId" = ${subjectid} \
+      )`
+    ).then((results) => {
+      resolve(results);
     }).catch((e) => reject(e));
   }),
 };
