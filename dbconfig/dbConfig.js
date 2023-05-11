@@ -16,8 +16,8 @@ if (process.env.ENVIRONMENT === 'hom') {
     ...settings,
     ssl: {
       rejectUnauthorized: false,
-    }
-  }
+    },
+  };
 }
 
 const pool = new Pool(settings);
@@ -27,8 +27,7 @@ while (false) {
     pool.query("SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'", (err, res) => {
       if (err) {
         console.log(err);
-      }
-      else if (!res.rowCount) {
+      } else if (!res.rowCount) {
         console.log('Database not found');
         console.log('Creating');
 
@@ -40,10 +39,10 @@ while (false) {
             console.log('Database \x1b[32mOK\x1b[0m');
           }
         });
-      } else if (res.rowCount !== dbSchema.DBSCHEMALEN) {
-        throw new Error('\x1b[33mFaulty database in project\n\x1b[33mDelete dbdata and start project again');
       }
-
+      // else if (res.rowCount !== dbSchema.DBSCHEMALEN) {
+      //   throw new Error('\x1b[33mFaulty database in project\n\x1b[33mDelete dbdata and start project again');
+      // }
       else {
         console.log('Database \x1b[32mOK\x1b[0m');
       }
