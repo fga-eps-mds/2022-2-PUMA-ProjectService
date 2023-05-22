@@ -17,22 +17,12 @@ module.exports = {
                 professors,
             } = input;
 
-            console.log('input ===================');
-            console.log(input);
-
             const subjectResponse = await subjectRepository.addSubject(subject);
-
-            console.log('subjectResponse ===================');
-            console.log(subjectResponse);
 
             const keywordsResponse = await subjectUtils
                 .addSubjectKeywordRelation(subjectResponse, keywords);
 
-            console.log('keywordsResponse ===================');
-            console.log(keywordsResponse);
-
             await subjectUtils.addSubjectSubareaRelation(subjectResponse, subareas);
-
             await subjectUtils.addSubjectProfessorRelation(subjectResponse, professors);
 
             resolve({
@@ -42,7 +32,6 @@ module.exports = {
                 professors,
             });
         } catch (e) {
-            console.log(e);
             reject(e);
         }
     }),
