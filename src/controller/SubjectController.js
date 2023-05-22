@@ -17,10 +17,19 @@ module.exports = {
                 professors,
             } = input;
 
+            console.log('input ===================');
+            console.log(input);
+
             const subjectResponse = await subjectRepository.addSubject(subject);
+
+            console.log('subjectResponse ===================');
+            console.log(subjectResponse);
 
             const keywordsResponse = await subjectUtils
                 .addSubjectKeywordRelation(subjectResponse, keywords);
+
+            console.log('keywordsResponse ===================');
+            console.log(keywordsResponse);
 
             await subjectUtils.addSubjectSubareaRelation(subjectResponse, subareas);
 
@@ -33,6 +42,7 @@ module.exports = {
                 professors,
             });
         } catch (e) {
+            console.log(e);
             reject(e);
         }
     }),
@@ -170,7 +180,7 @@ const subjectUtils = {
             }
             res = [...res, keyword];
             await keywordRepository.addKeywordSubjectRelation({
-                keywordid: keyword.keywordid,
+                keywordid: keyword.keywordId,
                 subjectid: subject.subjectId,
             });
         }
@@ -180,7 +190,7 @@ const subjectUtils = {
     addSubjectSubareaRelation: async (subject, subareas) => {
         for await (const subarea of subareas) {
             await subareaRepository.addSubjectSubareaRelation({
-                subareaid: subarea.subareaid,
+                subareaid: subarea.subAreaId,
                 subjectid: subject.subjectId,
             });
         }
@@ -189,7 +199,7 @@ const subjectUtils = {
     addSubjectProfessorRelation: async (subject, professors) => {
         for await (const professor of professors) {
             await professorRepository.addProfessorSubjectRelation({
-                regnumber: professor.regnumber,
+                regnumber: professor.regNumber,
                 subjectid: subject.subjectId,
             });
         }
