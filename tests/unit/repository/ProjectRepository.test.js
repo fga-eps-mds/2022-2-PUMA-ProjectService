@@ -24,6 +24,7 @@ jest.mock('../../../src/db/model/Common_User', () => {
   return {
     create: jest.fn(),
     findAll: jest.fn(),
+    findOne: jest.fn(),
   };
 });
 
@@ -48,10 +49,10 @@ describe('Repository', () => {
 
   describe('getUserProposals', () => {
     it('should resolve with response from sequelize.query when user.operation is "projetos"', async () => {
-      const user = { operation: 'projetos' };
-      const expectedResult = [{ id: 1, name: 'Project 1' }];
+      const user = { operation: 'projetos', userId: 1 };
+      const expectedResult = { id: 1, name: 'Project 1' };
 
-      sequelize.query.mockResolvedValue(expectedResult);
+      sequelize.query.mockResolvedValue([expectedResult]);
 
       const result = await projectRepository.getUserProposals(user);
 
@@ -60,31 +61,31 @@ describe('Repository', () => {
     });
 
     it('should resolve with response from sequelize.query when user.operation is "projetos-disciplina"', async () => {
-      const user = { operation: 'projetos-disciplina', userid: 123 };
-      const expectedResult = [{ id: 1, name: 'Project 1' }];
+      const user = { operation: 'projetos-disciplina', userId: 1 };
+      const expectedResult = { id: 1, name: 'Project 1' };
 
-      sequelize.query.mockResolvedValue(expectedResult);
+      sequelize.query.mockResolvedValue([expectedResult]);
 
       const result = await projectRepository.getUserProposals(user);
 
       expect(result).toBe(expectedResult);
-      expect(sequelize.query).toHaveBeenCalledWith(`SELECT p."projectId", p.name, p."expectedResult", p.status, p."createdAt", s.name AS "Subject", cu."fullName" FROM "Project" p LEFT JOIN "Subject" s ON p."subjectId" = s."subjectId" LEFT JOIN "Common_User" cu ON p."userId" = cu."userId" WHERE not(p.deleted) and p."subjectId" IN (SELECT DISTINCT l."subjectId" FROM "Teacher" prof INNER JOIN "Lectures" l ON prof."regNumber" = l."regNumber" WHERE prof."userId" = 123) ORDER BY p."projectId" DESC`);
+      expect(sequelize.query).toHaveBeenCalledWith(`SELECT p."projectId", p.name, p."expectedResult", p.status, p."createdAt", s.name AS "Subject", cu."fullName" FROM "Project" p LEFT JOIN "Subject" s ON p."subjectId" = s."subjectId" LEFT JOIN "Common_User" cu ON p."userId" = cu."userId" WHERE not(p.deleted) and p."subjectId" IN (SELECT DISTINCT l."subjectId" FROM "Teacher" prof INNER JOIN "Lectures" l ON prof."regNumber" = l."regNumber" WHERE prof."userId" = 1) ORDER BY p."projectId" DESC`);
     });
 
     it('should resolve with response from sequelize.query when user.operation is not "projetos" or "projetos-disciplina"', async () => {
-      const user = { operation: 'other', userid: 456 };
-      const expectedResult = [{ id: 1, name: 'Project 1' }];
+      const user = { operation: 'other', userId: 1 };
+      const expectedResult = { id: 1, name: 'Project 1' };
 
-      sequelize.query.mockResolvedValue(expectedResult);
+      sequelize.query.mockResolvedValue([expectedResult]);
 
       const result = await projectRepository.getUserProposals(user);
 
       expect(result).toBe(expectedResult);
-      expect(sequelize.query).toHaveBeenCalledWith(`SELECT p."projectId", p.name, p."expectedResult", p.status, p."createdAt", s.name AS "Subject", cu."fullName" FROM "Project" p LEFT JOIN "Subject" s on p."subjectId" = s."subjectId" LEFT JOIN "Common_User" cu on p."userId" = cu."userId" WHERE not(p.deleted) and p."userId" = 456 ORDER BY p."projectId" DESC`);
+      expect(sequelize.query).toHaveBeenCalledWith(`SELECT p."projectId", p.name, p."expectedResult", p.status, p."createdAt", s.name AS "Subject", cu."fullName" FROM "Project" p LEFT JOIN "Subject" s on p."subjectId" = s."subjectId" LEFT JOIN "Common_User" cu on p."userId" = cu."userId" WHERE not(p.deleted) and p."userId" = 1 ORDER BY p."projectId" DESC`);
     });
 
     it('should reject with response when sequelize.query throws an error', async () => {
-      const user = { operation: 'projetos' };
+      const user = { operation: 'projetos', userId: 1 };
       const expectedError = new Error('Database error');
 
       sequelize.query.mockRejectedValue(expectedError);
@@ -144,7 +145,7 @@ describe('Repository', () => {
       const keywordId = 1;
       const expectedResult = 123;
 
-      Summarize.findAll.mockResolvedValue([{ subjectId: expectedResult }]);
+      Summarize.findAll.mockResolvedValue({ subjectId: expectedResult });
 
       const result = await projectRepository.getSubjectByKeyword(keywordId);
 
