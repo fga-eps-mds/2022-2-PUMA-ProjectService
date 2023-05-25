@@ -126,7 +126,7 @@ describe('professorRepository', () => {
   describe('removeProfessorsofSubject', () => {
     it('should remove professors from a subject', () => {
       const input = {
-        subjectid: 123,
+        subjectId: 123,
       };
 
       sequelize.query.mockResolvedValue(null);
@@ -141,7 +141,7 @@ describe('professorRepository', () => {
         from "Subject" sb \
         inner join "Lectures" lt \
         on sb."subjectId" = lt."subjectId" \
-        where sb."subjectId" = ${input.subjectid} \
+        where sb."subjectId" = ${input.subjectId} \
       )`
           );
 

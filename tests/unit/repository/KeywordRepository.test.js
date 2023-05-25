@@ -378,7 +378,7 @@ describe('KeywordRepository', () => {
       const expectedResults = ['result1', 'result2'];
       const mockQuery = jest.spyOn(sequelize, 'query').mockResolvedValue(expectedResults);
 
-      const results = await keywordRepository.removeKeywordsOfSubject({ subjectid: subjectId });
+      const results = await keywordRepository.removeKeywordsOfSubject({ subjectId });
 
       expect(mockQuery).toHaveBeenCalledWith(
         `delete from "Summarize" sm \
