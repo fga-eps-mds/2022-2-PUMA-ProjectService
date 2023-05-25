@@ -143,7 +143,7 @@ describe('Repository', () => {
         from "Subject" sb \
         inner join "Identifies" id \
         on sb."subjectId" = id."subjectId" \
-        where sb."subjectId" = ${input.subjectid} \
+        where sb."subjectId" = ${input.subjectId} \
       ) \
       `
       );
