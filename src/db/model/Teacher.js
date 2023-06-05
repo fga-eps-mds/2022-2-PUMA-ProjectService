@@ -6,18 +6,39 @@ const Teacher = database.define('Teacher', {
         type: DataTypes.INTEGER,
         unique: true,
         references: {
-            model: {
-                tableName: "Common_User",
-                schema: "public",
-            },
-            key: "userId"
+          model: {
+            tableName: 'Common_User',
+            schema: 'public',
+          },
+          key: 'userId',
         },
-    },
-    regNumber: {
+      },
+      isIdealizer: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      regNumber: {
         type: DataTypes.STRING,
         allowNull: false,
-        primaryKey: true
-    }
+        primaryKey: true,
+      },
+      status: {
+        type: DataTypes.ENUM('PENDENTE', 'ACEITO', 'RECUSADO'),
+        defaultValue: 'PENDENTE',
+      },
+      departament: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+      course: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+      university: {
+            type: DataTypes.STRING,
+            allowNull: false
+       },
 }, {
     freezeTableName: true
 })
